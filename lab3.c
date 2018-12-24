@@ -1,76 +1,83 @@
-// my comment
 #include <stdio.h>
 #include <math.h>
-#define n 5
+#define size 5
 
-void arrayout(const char* s, int a[n][n])
+void print_array(int array_to_print[size][size])
 {
-    printf("\n%s",s);
-    for(int i = 0; i < n; i++)
+    for(int row = 0; row < size; row++)
     {
-        for(int j = 0; j < n; j++)
-            printf ("%4d", a[i][j]);
+        for(int column = 0; column < size; column++)
+            printf ("%4d", array_to_print[row][column]);
+        
         printf("\n");
     }
     printf("\n");
 }
-int* f(int a[n][n])
+int* find_f_i(int input_array[size][size])
 {
-    static int array[n-1] = {0};
-    for(int j = 1 ; j < n; j++)
-    for(int i = 0 ; i < j; i++)
-    array[i] += a[j][i];
+    // task was to find a f[i](a[i][j]) ¯\_(ツ)_/¯
+    static int array[size-1] = {};
+    for(int column = 1 ; column < size; column++)
+        for(int row = 0 ; row < column; row++)
+            array[row] += input_array[column][row];
     return array;
 }
-double F(int a[n][n])
+double find_F(int array[size][size])
 {
-    int* ar = f(a);
-    double res = 1;
+    // task was to find a F( f[i](a[i][j]) ) ¯\_(ツ)_/¯
+    int column;
+    int* array_of_f = find_f_i(array);
+    double multiplication = 1;
+
     printf("f:\n");
-    for(int k = 0; k < n-1; k++)
-        printf("%4d",k);
+    for(column = 0; column < size-1; column++)
+        printf("%4d",column);
+    
     printf("\n  ");
-    for(int k = 0; k < n-2; k++)
+    for(column = 0; column < size-2; column++)
         printf("————");
+    
     printf("——\n");
-    for(int i = 0; i < n-1; i++)
+    for(int column = 0; column < size-1; column++)
     {
-        printf("%4d",ar[i]);
-        res *= fabs(ar[i]);
+        printf("%4d",array_of_f[column]);
+        multiplication *= fabs(array_of_f[column]);
+        // tutor said to get absolute value of result
+        // to haven't problem with complex nums
     }
-    res = pow(res,1.0/(n-1));
-    return res;
+    return pow(multiplication,1.0/(size-1));
 }
-void sort_insertion(int a[n])
+void sort_by_insertion(int array[size])
 {
-    for (int c = n-1; c >= 1; c--)
-    {
-        int d=c;
-        while ( d < n && a[d-1] < a[d])
+    for (int pointer = size-1; pointer >= 1; pointer--)
+        for( int index = pointer; index < size && array[index-1] < array[index]; index++)
         {
-            int t  = a[d];
-            a[d]   = a[d-1];
-            a[d-1] = t;
-            d++;
+            int temp = array[index];
+            array[index] = array[index-1];
+            array[index-1] = temp;
         }
-    }
 }
-void array_of_sorted_arrays(int a[n][n])
+void sort_rows(int array_to_sort[size][size])
 {
-    for (int i = 0; i < n; i++)
-        sort_insertion(a[i]);
+    for (int row = 0; row < size; row++)
+        sort_by_insertion(array_to_sort[row]);
 }
-main()
+int main()
 {
-    static int a[n][n];
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    static int array[size][size];
+    for (int row = 0; row < size; row++)
+        for (int column = 0; column < size; column++)
         {
-            printf("a.%d%d = ", i, j);
-            scanf("%d", &a[i][j]);
+            printf("a.%d%d = ", row, column);
+            scanf("%d", &a[row][column]);
         }
-    arrayout("\nold array:\n",a);
-    array_of_sorted_arrays(a);
-    arrayout("new array:\n",a);
-    printf("\n\nF: %lf\n",F(a));
+    printf("\n\n old array:\n");
+    print_array(array);
+    sort_rows(array);
+
+    printf("\n new array:\n");
+    print_array(array);
+    printf("\n F: %lf \n",find_F(array));
+
+    return 0;
 }
